@@ -83,13 +83,36 @@ class AppleTV(Connector):
         # `atvremote scan` is slow + noisy; prefer the env-specified IDs.
         out: list[Device] = []
         for atv_id in self.ids:
+            model_id = self._read_model_identifier(atv_id)
             out.append(Device(
                 id=f"appletv:{atv_id}",
                 vendor="apple", product="tvos",
                 label=f"Apple TV {atv_id[:8]}…",
-                extra={"atv_id": atv_id},
+                extra={"atv_id": atv_id, "model_identifier": model_id},
             ))
         return out
+
+    def _read_model_identifier(self, atv_id: str) -> str | None:
+        """Pull the Apple model id (e.g. 'AppleTV14,1') from device_info.
+        Required so latest_version() can pick the right manifest bucket."""
+        if not self.atvremote:
+            return None
+        try:
+            r = subprocess.run(
+                [self.atvremote, "--id", atv_id, "device_info"],
+                capture_output=True, text=True, timeout=10,
+            )
+            if r.returncode != 0:
+                return None
+            for line in r.stdout.splitlines():
+                key, _, val = line.partition(":")
+                if key.strip().lower() in ("model identifier", "model"):
+                    v = val.strip().split()[0] if val.strip() else ""
+                    if v.startswith("AppleTV"):
+                        return v
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            return None
+        return None
 
     def current_version(self, device: Device) -> Version | None:
         atv_id = (device.extra or {}).get("atv_id")
@@ -114,9 +137,21 @@ class AppleTV(Connector):
         return None
 
     def latest_version(self, device: Device) -> Version | None:
-        # No published catalog feed in machine-readable form.
-        # TODO: maintain manifests/apple_tv.yaml community-curated.
-        return None
+        """Apple doesn't publish a machine-readable 'latest tvOS' feed.
+        We carry a community-curated manifest at manifests/apple_tv.yaml
+        keyed by Apple's model identifier (e.g. AppleTV14,1)."""
+        try:
+            import yaml
+            from pathlib import Path
+            mpath = Path(__file__).resolve().parent.parent.parent / "manifests" / "apple_tv.yaml"
+            if not mpath.exists():
+                return None
+            man = yaml.safe_load(mpath.read_text()) or {}
+            model = (device.extra or {}).get("model_identifier") or "default"
+            latest = man.get(model, {}).get("latest") or man.get("default", {}).get("latest")
+            return Version(str(latest)) if latest else None
+        except Exception:
+            return None
 
     def can_patch(self, device: Device) -> CanPatchResult:
         if not self.atvremote:
