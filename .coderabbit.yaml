@@ -1,0 +1,64 @@
+# CodeRabbit config — https://docs.coderabbit.ai/guides/configure-coderabbit
+language: en-US
+early_access: false
+reviews:
+  profile: chill            # 'chill' = fewer nits; 'assertive' = more opinionated
+  request_changes_workflow: false
+  high_level_summary: true  # PR-level summary comment
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  auto_review:
+    enabled: true
+    drafts: false           # don't review draft PRs
+    base_branches:
+      - main
+  path_filters:
+    - "!**/*.env*"
+    - "!**/state/**"
+    - "!**/receipts/**"
+    - "!**/dist/**"
+    - "!**/build/**"
+    - "!**/*.egg-info/**"
+  path_instructions:
+    - path: "patchwright/connectors/**"
+      instructions: >-
+        Every connector must (a) implement the full Connector ABC, (b)
+        default apply_patch to dry_run=True, (c) return result objects
+        on failure rather than raising, (d) carry a real LEGAL_BASIS
+        string citing DMCA §1201 / right-to-repair / vendor-app
+        replay justification, (e) read credentials only via
+        Credentials.get() — never hardcoded, never in source. Flag
+        any subprocess call that isn't a specific binary with
+        validated args. Flag any connector that could act on a device
+        not in the user's owned_devices list. Flag any path that
+        bypasses receipts.write().
+    - path: "patchwright/core/**"
+      instructions: >-
+        Core framework code. Hold to a higher safety bar:
+        Version comparison must be semver-aware (build metadata
+        stripped). safety.py rate limits and kill switch must not be
+        bypassable by connector code. Receipts must be append-only.
+        Credentials must prefer macOS Keychain when available; fall
+        back to file with 0o600 perms; never log values.
+    - path: "manifests/**"
+      instructions: >-
+        Community-curated 'latest known firmware' manifests. Each
+        entry needs `latest`, `updated`, and a `source` citation
+        (community thread, vendor advisory, observed in production).
+        Reject manifests that claim a version is 'latest' without
+        evidence.
+    - path: "LEGAL.md"
+      instructions: >-
+        Legal scaffolding — any change here is high-stakes. Verify
+        new citations are accurate (statute numbers, ruling years).
+        Reject removal of safety language ('we will not do X')
+        without strong justification.
+    - path: "tests/**"
+      instructions: >-
+        Tests must not require live network access by default.
+        Captured fixtures preferred. No real credentials in
+        fixtures. Network-touching tests must be marked with a
+        clear pytest marker the runner can skip.
+chat:
+  auto_reply: true

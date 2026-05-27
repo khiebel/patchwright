@@ -1,0 +1,68 @@
+name: Claude Code Review
+
+# Automatically reviews every pull request to patchwright.
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  claude-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Claude Code Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          # CLAUDE_CODE_OAUTH_TOKEN secret comes from `claude setup-token`
+          # — uses a Claude Max subscription, not a metered API key.
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Review this pull request as a maintainer of patchwright — an
+            open-source IoT firmware patching framework. Focus on:
+
+            **Connector contract:**
+            - Does every new connector implement the full Connector ABC?
+            - Is `dry_run=True` the default for `apply_patch`?
+            - Do connector methods return result objects on failure (never raise)?
+            - Is `LEGAL_BASIS` set with a real citation, not a placeholder?
+            - Is `SUPPORT_TIER` correct (OFFICIAL_API / REVERSED_API /
+              LOCAL_HACK / MANUAL_ONLY)?
+
+            **Safety:**
+            - Are credentials read via `Credentials.get()` (Keychain → file →
+              env), never hardcoded?
+            - Are any new actions that could affect 3rd-party devices gated
+              by `owner_ack` enforcement?
+            - Does the PR respect the `/tmp/patchwright-halt` kill switch?
+            - Does the PR maintain the rate-limit caps?
+
+            **Legal posture:**
+            - Does the connector ONLY act on the owner's own device with
+              the owner's own credentials?
+            - Does it avoid hitting any vendor cloud broadcast path that
+              could touch other users?
+            - If it reverse-engineers a vendor API, is the LEGAL_BASIS
+              section in the docstring complete (DMCA §1201 citation,
+              right-to-repair law reference if applicable)?
+
+            **Receipts + telemetry:**
+            - Are all actions writing receipts via `receipts.write()`?
+            - No silent retries that could double-trigger patches?
+
+            **Code quality:**
+            - Single Python file per connector
+            - stdlib + minimal deps preferred (PyYAML and `cryptography` OK)
+            - No `subprocess` of arbitrary shell — use specific binaries + validated args
+            - Tests included where reasonable
+
+            Be concise. Inline-comment specific lines. Skip pure style nits.
+            If the PR introduces a vulnerability or a credential leak, BLOCK
+            and explain why.
