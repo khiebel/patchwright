@@ -1,0 +1,16 @@
+# ChargePoint Home Flex firmware manifest.
+#
+# ChargePoint's mobile app doesn't expose "latest available version" cleanly.
+# When a CVE drops with a stated fix-in version, we record it here.
+#
+# Update by submitting a PR.
+
+default:
+  latest: "5.5.4.22"     # observed in production 2026-05-26 on CPH50-NEMA14-50-L23
+  updated: "2026-05-26"
+  source: "Live ChargePoint Home Flex CPH50-NEMA14-50 reports 5.5.4.22 (last OTA 2025-09-22). CVE-listed-vulnerable was 5.5.4.13."
+  cve_notes:
+    - "CVE-2026-4156 (CVSS 9.8): fixed in 5.5.4.18 per ChargePoint security bulletin"
+    - "CVE-2026-4157 (CVSS 9.8): fixed in 5.5.4.18 per ChargePoint security bulletin"
+    - "CVE-2026-4155 (CVSS 7.5): fixed in 5.5.4.18 per ChargePoint security bulletin"
+    - "CVE-2025-54564 (CVSS 7.8): fixed in 5.5.4.18 per ChargePoint security bulletin"

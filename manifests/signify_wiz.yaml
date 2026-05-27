@@ -1,0 +1,30 @@
+# WiZ firmware manifest — community-curated "latest known firmware" per module.
+#
+# WiZ (Signify) doesn't publish a machine-readable firmware feed. The
+# values here are gathered from the WiZ community forums + the
+# WiZ mobile app's reported "newest available" string.
+#
+# Update by submitting a PR. Required fields per module:
+#   latest: <version string>
+#   updated: <YYYY-MM-DD when this entry was last verified>
+#   source: <human note — where you got this value>
+#
+# Modules observed in the wild (as of 2026-05-26):
+#   ESP20_SHRGBC_01  — A19/G25 RGB+CCT bulbs
+#   ESP10_SOCKET_06  — Smart plug
+#   ESP01_SHRGB_03   — older RGB strips
+#   ESP25_SOCKET_01  — newer smart plug
+
+ESP20_SHRGBC_01:
+  latest: "1.37.0"
+  updated: "2026-05-26"
+  source: "Observed in production 2026-05-26; matches WiZ app's reported newest for ESP20 RGBC"
+
+ESP10_SOCKET_06:
+  latest: "1.36.0"
+  updated: "2026-05-26"
+  source: "WiZ subreddit; multiple users report 1.36 on ESP10_SOCKET_06"
+  cve_notes:
+    - "CVE-2025-56562 (CVSS 7.5): DoS via MAC address. Affects fw <= 1.9.1; not Kevin's 1.33.1."
+
+# Add more modules as users contribute PRs.

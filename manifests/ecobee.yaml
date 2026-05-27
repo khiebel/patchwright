@@ -1,0 +1,11 @@
+# ecobee firmware manifest.
+# ecobee doesn't expose 'latest available' through the API; community-curated.
+
+aresSmart:                  # ecobee Premium
+  latest: "4.10.7.44"
+  updated: "2026-05-26"
+  source: "Live ecobee Premium thermostats report 4.10.7.44; community forums confirm this as current rollout"
+
+default:
+  latest: "4.10.7.44"
+  updated: "2026-05-26"

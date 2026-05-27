@@ -1,0 +1,47 @@
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.coverage
+htmlcov/
+
+# Virtual envs
+.venv/
+.venv-tools/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*~
+
+# OS
+.DS_Store
+
+# Per-user runtime state (NEVER commit)
+state/
+receipts/
+*.log
+launchd.*.log
+~/.patchwright/
+
+# Local credentials — should never appear in tree, but defense in depth
+credentials.json
+*.pem
+.env
+.env.*
+secrets.yaml
