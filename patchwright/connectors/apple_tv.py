@@ -114,9 +114,21 @@ class AppleTV(Connector):
         return None
 
     def latest_version(self, device: Device) -> Version | None:
-        # No published catalog feed in machine-readable form.
-        # TODO: maintain manifests/apple_tv.yaml community-curated.
-        return None
+        """Apple doesn't publish a machine-readable 'latest tvOS' feed.
+        We carry a community-curated manifest at manifests/apple_tv.yaml
+        keyed by Apple's model identifier (e.g. AppleTV14,1)."""
+        try:
+            import yaml
+            from pathlib import Path
+            mpath = Path(__file__).resolve().parent.parent.parent / "manifests" / "apple_tv.yaml"
+            if not mpath.exists():
+                return None
+            man = yaml.safe_load(mpath.read_text()) or {}
+            model = (device.extra or {}).get("model_identifier") or "default"
+            latest = man.get(model, {}).get("latest") or man.get("default", {}).get("latest")
+            return Version(str(latest)) if latest else None
+        except Exception:
+            return None
 
     def can_patch(self, device: Device) -> CanPatchResult:
         if not self.atvremote:

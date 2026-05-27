@@ -1,0 +1,40 @@
+# Apple TV (tvOS) firmware manifest.
+#
+# Apple doesn't publish a machine-readable "latest tvOS" feed. The values
+# here are gathered from Apple's developer documentation pages + observed
+# 'newest available' in the Apple TV Settings UI.
+#
+# Update by submitting a PR. Required fields per generation:
+#   latest: <tvOS version string>
+#   updated: <YYYY-MM-DD when this entry was last verified>
+#   source: <human note — where you got this value>
+#
+# Apple TV generations we track:
+#   AppleTV5,3   — Apple TV HD (4th gen)
+#   AppleTV6,2   — Apple TV 4K (1st gen, 2017)
+#   AppleTV11,1  — Apple TV 4K (2nd gen, 2021)
+#   AppleTV14,1  — Apple TV 4K (3rd gen, 2022)
+
+AppleTV14,1:
+  latest: "18.4"
+  updated: "2026-05-26"
+  source: "Apple Software Update catalog (developer.apple.com) — tvOS 18.4 released 2026-04-08"
+
+AppleTV11,1:
+  latest: "18.4"
+  updated: "2026-05-26"
+  source: "Same tvOS train as 14,1"
+
+AppleTV6,2:
+  latest: "18.4"
+  updated: "2026-05-26"
+  source: "Apple is still shipping tvOS 18.x to 2017 4K"
+
+AppleTV5,3:
+  latest: "18.4"
+  updated: "2026-05-26"
+  source: "Apple TV HD on same tvOS train"
+
+default:
+  latest: "18.4"
+  updated: "2026-05-26"
