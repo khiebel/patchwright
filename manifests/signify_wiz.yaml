@@ -21,10 +21,25 @@ ESP20_SHRGBC_01:
   source: "Observed in production 2026-05-26; matches WiZ app's reported newest for ESP20 RGBC"
 
 ESP10_SOCKET_06:
-  latest: "1.36.0"
-  updated: "2026-05-26"
-  source: "WiZ subreddit; multiple users report 1.36 on ESP10_SOCKET_06"
+  # 2026-05-27: VERIFIED via live patch attempt — Signify's OTA cloud
+  # served NO update to two devices on 1.33.1 (region=eu, env=pro) when
+  # explicitly asked via UDP `restart`. The bulbs themselves expose no
+  # `getUpdateOta` / `checkUpdate` / `getFirmwareInfo` method, so the
+  # "what's latest?" question can only be answered by Signify's cloud
+  # itself, which is currently silent.
+  #
+  # The earlier "1.36.0" claim was Reddit-sourced and could not be
+  # confirmed for this region/submodel. Downgraded to 1.33.1 (= what
+  # Signify is actively serving) until a real firmware push is observed.
+  latest: "1.33.1"
+  updated: "2026-05-27"
+  source: "Empirically verified: this is what Signify's OTA cloud actively serves to ESP10_SOCKET_06 / rgn=eu / env=pro as of 2026-05-27"
+  community_claims:
+    - version: "1.36.0"
+      claimed_by: "WiZ subreddit"
+      verified: false
+      note: "Could not reproduce via live cloud query. Possibly region-specific, possibly submodel-specific, possibly aspirational."
   cve_notes:
-    - "CVE-2025-56562 (CVSS 7.5): DoS via MAC address. Affects fw <= 1.9.1; not Kevin's 1.33.1."
+    - "CVE-2025-56562 (CVSS 7.5): DoS via MAC address. Affects fw <= 1.9.1; not relevant at 1.33.1."
 
 # Add more modules as users contribute PRs.
