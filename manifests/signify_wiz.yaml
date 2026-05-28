@@ -21,10 +21,50 @@ ESP20_SHRGBC_01:
   source: "Observed in production 2026-05-26; matches WiZ app's reported newest for ESP20 RGBC"
 
 ESP10_SOCKET_06:
-  latest: "1.36.0"
-  updated: "2026-05-26"
-  source: "WiZ subreddit; multiple users report 1.36 on ESP10_SOCKET_06"
+  # 2026-05-27: VERIFIED via Signify's own published release notes +
+  # live patch attempt. ESP10_SOCKET_06 is the original Wi-Fi-ONLY
+  # WiZ smart-plug module (no Bluetooth radio). Signify maintains
+  # SEPARATE FIRMWARE TRACKS per hardware class:
+  #
+  #   Wi-Fi + Bluetooth  (model ID > 100k):  latest = 1.37.0
+  #   Wi-Fi only         (model ID < 100k):  latest = 1.33.1  ← this module
+  #
+  # 1.33.1 was explicitly published by Signify as the "Wi-Fi only
+  # devices, security hotfix, no user-visible feature" release. Every
+  # release since (1.34 through 1.37) has been Wi-Fi+BT-only — those
+  # versions do not apply to ESP10_SOCKET_06 hardware.
+  #
+  # The original Reddit "1.36.0 for ESP10_SOCKET_06" claim conflated
+  # the two tracks: those posters likely had the BT-equipped successor
+  # ESP25_SOCKET_01. Confirmed via live UDP `restart` against two
+  # devices: Signify served no update — because 1.33.1 IS the latest
+  # for this hardware class.
+  #
+  # Cross-checks:
+  #   - pywizlight's tests/fake_bulb.py pins ESP10_SOCKET_06 ≤ 1.25.0
+  #     (community treats it as the older Wi-Fi-only generation)
+  #   - Home Assistant's wiz integration uses ESP10_SOCKET_06 as the
+  #     canonical "socket" test fixture
+  #   - No EU/US firmware-track split exists. `rgn:"eu"` is just
+  #     provisioning metadata baked at manufacture, not a gate.
+  #
+  # Authoritative source for future updates to this entry:
+  #   https://wizconnected.helpshift.com/hc/en/7-wiz-v2/section/182-firmware-release-notes/
+  #
+  # Lifecycle status: soft-EOL. Still receives security hotfixes
+  # (1.33.1 was one), but no new features. Move to ESP25_SOCKET_01 or
+  # newer Wi-Fi+BT hardware for the active firmware track.
+  latest: "1.33.1"
+  updated: "2026-05-27"
+  source: "Signify release notes index — Wi-Fi-only track tops out at 1.33.1 (security hotfix); 1.34+ ship to Wi-Fi+BT hardware only"
+  hardware_class: "wifi-only"
+  lifecycle: "soft-eol-security-only"
+  community_claims:
+    - version: "1.36.0"
+      claimed_by: "WiZ subreddit"
+      verified: false
+      note: "Hardware-track confusion. 1.36.0 ships only to Wi-Fi+BT modules; does NOT apply to ESP10_SOCKET_06."
   cve_notes:
-    - "CVE-2025-56562 (CVSS 7.5): DoS via MAC address. Affects fw <= 1.9.1; not Kevin's 1.33.1."
+    - "CVE-2025-56562 (CVSS 7.5): DoS via MAC address. Affects fw <= 1.9.1; not relevant at 1.33.1."
 
 # Add more modules as users contribute PRs.
